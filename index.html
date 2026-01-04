@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Animation Background</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
+    /* Basic layout */
+    .hero {
+      position: relative;
+      height: 400vh; /* scroll length for the frame sequence */
+    }
+
+    /* Sticky container that holds the canvas */
+    .sticky-hero {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh; /* full viewport */
+      overflow: hidden;
+      display: block;
+      background: #000;
+      z-index: 1;
+    }
+
+    /* Canvas covering the sticky hero */
+    #animationCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Overlay container sits above the canvas; keep center free */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none; /* allow clicks through empty areas */
+    }
+
+    /* Content boxes around the edges, avoid center circle */
+    .box {
+      position: absolute;
+      max-width: 320px;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+      pointer-events: auto;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .box h3 { margin: 0 0 8px 0; font-size: 16px; }
+
+    .box.top-left { top: 6vh; left: 4vw; }
+    .box.top-right { top: 6vh; right: 4vw; }
+    .box.bottom-left { bottom: 8vh; left: 4vw; }
+    .box.bottom-right { bottom: 8vh; right: 4vw; }
+    .box.left-center { left: 4vw; top: 45vh; transform: translateY(-50%); }
+    .box.right-center { right: 4vw; top: 45vh; transform: translateY(-50%); }
+
+    /* Sticky glass navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 11;
+      background: linear-gradient(180deg, rgba(0,0,0,0.92), rgba(15,15,20,0.88));
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: 0 6px 18px rgba(212,175,55,0.15);
+      border-bottom: 1px solid rgba(192,192,203,0.2);
+      color: #d4af37;
+    }
+
+    .nav-left { display:flex; align-items:center; gap:12px; }
+    .logo { font-weight:700; letter-spacing:0.6px; color: #d4af37; }
+    .nav-links { display:flex; gap:14px; opacity:0.9 }
+    .nav-links a { color:#c0c0cb; text-decoration:none; font-size:14px; }
+
+    /* Page sections under the hero */
+    .content { background: #0a0a0e; color: #c0c0cb; padding: 80px 24px; }
+    .section { max-width: 1100px; margin: 0 auto 40px auto; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(192,192,203,0.06)); padding: 28px; border-radius: 10px; border: 1px solid rgba(212,175,55,0.2); }
+    .section h2 { color: #d4af37; }
+
+    /* Scroll-triggered h1 animations */
+    .overlay h1 {
+      font-family: 'Lavishly Yours', cursive;
+      background: linear-gradient(90deg, #111111, #4b4b4b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .overlay h1.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 800px) {
+      .box { max-width: 260px; padding: 14px; }
+      .nav-links { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">Aurelia Ring</div>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#specs">Specs</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a href="#buy" style="color:#fff;text-decoration:none;padding:8px 12px;background:rgba(255,255,255,0.06);border-radius:8px;">Buy</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    
+    <div class="sticky-hero">
+      
+      <canvas id="animationCanvas"></canvas>
+      
+      <div class="overlay">
+        <h1 class="scroll-text" data-scroll="0" style="position: absolute; top: 100px; left: 60px; font-size: 48px; margin: 0;">Premium Rings</h1>
+        <h1 class="scroll-text" data-scroll="1" style="position: absolute; bottom: 60px; right: 80px; font-size: 42px; margin: 0;">Elegant</h1>
+
+      </div>
+
+    </div>
+     
+  </section>
+
+  
+  <div class="content">
+    <section id="overview" class="section">
+      <h2>Overview</h2>
+      <p>The Aurelia Ring fuses classic aesthetics with a contemporary engineering approach. Its profile is sculpted to reflect light while remaining elegantly subtle.</p>
+    </section>
+
+    <section id="specs" class="section">
+      <h2>Specifications</h2>
+      <ul>
+        <li>Metal: 14k Gold (Yellow / White / Rose)</li>
+        <li>Stones: Lab-grown diamonds available</li>
+        <li>Weight: Approx. 4.2g (size 7)</li>
+        <li>Finish: High polish or matte</li>
+      </ul>
+    </section>
+
+    <section id="gallery" class="section">
+      <h2>Gallery</h2>
+      <p>Scroll the page to watch the ring rotate — use the frame animation to preview angles and finishes.</p>
+    </section>
+
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>Questions? Email us at hello@example.com or visit our stores for an in-person consult.</p>
+    </section>
+  </div>
+
+  <script>
+    const frameCount = 40;
+    const images = [];
+    const canvas = document.getElementById('animationCanvas');
+    const context = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Preload frames
+    for (let i = 1; i <= frameCount; i++) {
+      const img = new Image();
+      img.src = `frames/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
+      images.push(img);
+    }
+
+    // Draw first frame
+    images[0].onload = () => {
+      context.drawImage(images[0], 0, 0, canvas.width, canvas.height);
+    }
+
+    // Update canvas on scroll and reveal h1s sequentially
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const maxScroll = document.querySelector('.hero').offsetHeight - window.innerHeight;
+      const scrollFraction = scrollTop / maxScroll;
+      const frameIndex = Math.min(
+        frameCount - 1,
+        Math.floor(scrollFraction * frameCount)
+      );
+
+      requestAnimationFrame(() => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(images[frameIndex], 0, 0, canvas.width, canvas.height);
+      });
+
+      // Reveal h1s one by one based on scroll progress
+      const scrollTexts = document.querySelectorAll('.scroll-text');
+      scrollTexts.forEach((el) => {
+        const index = parseInt(el.getAttribute('data-scroll'));
+        const threshold = (index + 1) * (1 / 3); // 1/3, 2/3, 3/3
+        if (scrollFraction >= threshold) {
+          el.classList.add('visible');
+        } else {
+          el.classList.remove('visible');
+        }
+      });
+    });
+
+    // Make canvas responsive on resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+
+</body>
+</html>
