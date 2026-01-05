@@ -1,0 +1,195 @@
+ body {
+      margin: 0;
+      font-family: sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    /* Basic layout */
+    .hero {
+      position: relative;
+      height: 400vh; /* scroll length for the frame sequence */
+    }
+
+    /* Sticky container that holds the canvas */
+    .sticky-hero {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh; /* full viewport */
+      overflow: hidden;
+      display: block;
+      background: #000;
+      z-index: 1;
+    }
+
+    /* Canvas covering the sticky hero */
+    #animationCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Overlay container sits above the canvas; keep center free */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none; /* allow clicks through empty areas */
+    }
+
+    /* Content boxes around the edges, avoid center circle */
+    .box {
+      position: absolute;
+      max-width: 320px;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+      pointer-events: auto;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .box h3 { margin: 0 0 8px 0; font-size: 16px; }
+
+    .box.top-left { top: 6vh; left: 4vw; }
+    .box.top-right { top: 6vh; right: 4vw; }
+    .box.bottom-left { bottom: 8vh; left: 4vw; }
+    .box.bottom-right { bottom: 8vh; right: 4vw; }
+    .box.left-center { left: 4vw; top: 45vh; transform: translateY(-50%); }
+    .box.right-center { right: 4vw; top: 45vh; transform: translateY(-50%); }
+
+    /* Sticky glass navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 11;
+      background: linear-gradient(180deg, rgba(0,0,0,0.92), rgba(15,15,20,0.88));
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: 0 6px 18px rgba(212,175,55,0.15);
+      border-bottom: 1px solid rgba(192,192,203,0.2);
+      color: #d4af37;
+    }
+
+    .nav-left { display:flex; align-items:center; gap:12px; }
+    .logo { font-weight:700; letter-spacing:0.6px; color: #d4af37; }
+    .nav-links { display:flex; gap:14px; opacity:0.9 }
+    .nav-links a { color:#c0c0cb; text-decoration:none; font-size:14px; }
+
+    /* Page sections under the hero */
+    .content { background: #0a0a0e; color: #c0c0cb; padding: 80px 24px; }
+    .section { max-width: 1100px; margin: 0 auto 40px auto; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(192,192,203,0.06)); padding: 28px; border-radius: 10px; border: 1px solid rgba(212,175,55,0.2); }
+    .section h2 { color: #d4af37; }
+
+    /* Scroll-triggered h1 animations */
+    .overlay h1 {
+      font-family: 'Lavishly Yours', cursive;
+      background: linear-gradient(90deg, #111111, #4b4b4b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .overlay h1.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 800px) {
+      .box { max-width: 260px; padding: 14px; }
+      .nav-links { display:none; }
+      .scroll-text {
+        font-size: 24px !important;
+      }
+      .navbar {
+        height: 56px;
+        padding: 0 16px;
+      }
+      .logo {
+        font-size: 16px;
+      }
+      .nav-right a {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+      }
+      #contact {
+        text-align: center;
+      }
+      #contact h2 {
+        margin-bottom: 20px;
+      }
+      #contact p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      #contact a {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #d4af37;
+        color: #000;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 8px 0;
+        transition: background 0.3s ease;
+      }
+      #contact a:hover {
+        background: #e5c158;
+      }
+    }
+
+    /* Reviews grid */
+    .reviews-grid {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .review-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(212,175,55,0.08);
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+      max-width: 360px;
+      color: #e9e6e0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .review-card .quote {
+      font-style: italic;
+      line-height: 1.5;
+      margin: 0 0 12px 0;
+      color: #d6d2cc;
+    }
+
+    .review-card .author {
+      margin: 0;
+      text-align: right;
+      color: #d4af37;
+      font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      .reviews-grid { flex-direction: column; gap: 12px; }
+      .review-card { max-width: 100%; }
+    }
